@@ -4,13 +4,13 @@ import shutil
 
 from argparse import ArgumentParser
 from om2bms.exceptions import BMSMaxMeasuresException
-from om2bms.image_resizer import black_background_thumbnail
+from om2bms.extra_file_processing import size_bg_thumbnail, cut_save_preview_audio
 
 import om2bms.om_to_bms
 import multiprocessing
 
 
-def start_convertion(filedir_, output_file_dir_, file_, args, bg_list_):
+def start_convertion(filedir_, output_file_dir_, file_, args, bg_list_, audio_list_):
     """
     Returns bg filename
     """
@@ -23,20 +23,38 @@ def start_convertion(filedir_, output_file_dir_, file_, args, bg_list_):
         }
         
         converted_file = om2bms.om_to_bms.OsuManiaToBMSParser(filedir_, output_file_dir_, file_)
-        if not converted_file.failed and args.bg:
-            bg_list_.append(converted_file.get_bg())
+        if not converted_file.failed:
+            if args.bg:
+                bg_list_.append((converted_file.get_bg(), converted_file.beatmap.creator, converted_file.beatmap.beatmap_id))
+            
+            audio_list_.append((converted_file.get_audio_path(), converted_file.beatmap.preview_time, converted_file.beatmap.timing_points))
+        
+
     except BMSMaxMeasuresException as e:
         print(e)
 
+def make_preview_audio(audio_list_) -> None:
+    """
+    Creates a second audio file that we will use in the om2bms preview section
+    (From osu map, uses either PreviewTime + 20s, first kiai section + 20s, 40% song + 20s)
+    """
+
+    seen = []
+    for audio_info in audio_list_:
+        audio_path, map_preview_time, map_timing_poins = audio_info
+        if audio_path is not None and audio_path not in seen:
+            cut_save_preview_audio(audio_path, map_preview_time, map_timing_poins)
+            seen.append(audio_path)
 
 def convert_bg_list(bg_list_) -> None:
     """
     Converts all images in img_list
     """
     seen = []
-    for bg in bg_list_:
+    for bg_info in bg_list_:
+        bg, creator, beatmapid = bg_info
         if bg is not None and bg not in seen:
-            black_background_thumbnail(bg)
+            size_bg_thumbnail(bg, creator, beatmapid)
             seen.append(bg)
 
 
@@ -54,13 +72,13 @@ if __name__ == "__main__":
 
     parser.add_argument('-sdo', '--set_default_out',
                         action='store',
-                        default='None',
+                        default=None,
                         help='Sets the default output directory',
                         type=str)
 
     parser.add_argument('-hs', '--hitsound',
                         action='store_false',
-                        default=True,
+                        default=None,
                         help='Disables hitsounds.')
 
     parser.add_argument('-b', '--bg',
@@ -70,17 +88,17 @@ if __name__ == "__main__":
 
     parser.add_argument('-f', '--foldername',
                         action='store',
-                        default='None',
+                        default=None,
                         help='Directory name to store output files in output path. '
                              'Default value is the .osz filename')
 
     parser.add_argument('-o', '--offset',
-                        default=0,
+                        default=-235,
                         type=int,
                         help="Adjusts music start time by [offset] ms.")
 
     parser.add_argument('-j', '--judge',
-                        default=3,
+                        default=2,
                         type=int,
                         help="Judge difficulty. Defaults to EASY. "
                         "(3: EASY), (2: NORMAL), (1: HARD), (0: VERY HARD)")
@@ -92,14 +110,14 @@ if __name__ == "__main__":
     if not os.path.exists(cfg_file):
         with open(cfg_file, "w") as file:
             file.write("")
-    if args.set_default_out != "None":
+    if args.set_default_out is not None:
         with open(cfg_file, 'r+') as cfg_fp:
             cfg_fp.write(args.set_default_out)
             print('Default output directory has been set to "%s"' % args.set_default_out)
             cfg_fp.close()
         outdir = args.set_default_out.strip()
 
-    if args.in_file is "None":
+    if args.in_file is None:
         exit(0)
 
     if os.path.exists(cfg_file):
@@ -109,7 +127,7 @@ if __name__ == "__main__":
     else:
         outdir = cwd
 
-    if args.foldername is "None":
+    if args.foldername is None:
         foldername = os.path.basename(args.in_file)[:-4]
         out_foldername = foldername
     else:
@@ -155,11 +173,12 @@ if __name__ == "__main__":
         processes = []
         manager = multiprocessing.Manager()
         bg_list = manager.list()
+        audio_list = manager.list()
         for file in os.listdir(unzip_dir):
             if file.endswith(".osu"):
                 filedir = os.path.join(unzip_dir, file)
                 p = multiprocessing.Process(target=start_convertion,
-                                            args=(filedir, output_file_dir, file, args, bg_list))
+                                            args=(filedir, output_file_dir, file, args, bg_list, audio_list))
                 processes.append(p)
 
         for p in processes:
@@ -178,6 +197,9 @@ if __name__ == "__main__":
         if args.bg:
             print("Converting BG...")
             convert_bg_list(bg_list)
+        
+        print("Snipping preview audio...")
+        make_preview_audio(audio_list)
 
         # move files to output directory
         for f in os.listdir(unzip_dir):

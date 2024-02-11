@@ -54,6 +54,7 @@ class OsuManiaToBMSParser:
     def __init__(self, in_file, out_dir, filename):
         self.reset()
         self.bg_filename = None
+        self.audio_filepath = None
         self.failed = False
         try:
             self.beatmap = OsuBeatmapReader(in_file)
@@ -84,12 +85,21 @@ class OsuManiaToBMSParser:
                 os.path.isfile(os.path.join(file, self.beatmap.stagebg)):
             # om2bms.image_resizer.black_background_thumbnail(os.path.join(file, self.beatmap.stagebg))
             self.bg_filename = os.path.join(file, self.beatmap.stagebg)
+        
+        if self.beatmap.audio_filename is not None and os.path.isfile(os.path.join(file, self.beatmap.audio_filename)):
+            self.audio_filepath = os.path.join(file, self.beatmap.audio_filename)
 
     def get_bg(self):
         """
         Returns bg filename
         """
         return self.bg_filename
+    
+    def get_audio_path(self):
+        """
+        Returns path to map audio
+        """
+        return self.audio_filepath
 
     def reset(self):
         """
@@ -480,14 +490,17 @@ class OsuManiaToBMSParser:
         buffer.append("#ARTIST " + self.beatmap.artist_unicode)
         # buffer.append("#SUBARTIST " + beatmap.artist)
         buffer.append("#BPM " + str(int(calculate_bpm(self.beatmap.timing_points[0]))))
-        buffer.append("#DIFFICULTY " + "5")
+        buffer.append("#PLAYLEVEL " + "0") # initially 5
         buffer.append("#RANK " + str(OsuManiaToBMSParser._convertion_options["JUDGE"]))
         buffer.append("")
         for hs in self.beatmap.hitsound_names:
             buffer.append("#WAV" + hs[0] + " " + str(hs[1]))
         buffer.append("")
+        if self.beatmap.audio_filename is not None: # is for preview audio
+            buffer.append("#PREVIEW " + "preview_" + self.beatmap.audio_filename)
         if self.beatmap.stagebg is not None and OsuManiaToBMSParser._convertion_options["BG"]:
             buffer.append("#BMP01 " + self.beatmap.stagebg)
+            buffer.append("#STAGEFILE " + self.beatmap.stagebg) # allows you to preview the map bg in song select
             buffer.append("")
         if len(self.beatmap.float_bpm) > 0:
             for e in self.beatmap.float_bpm:

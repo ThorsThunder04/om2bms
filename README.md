@@ -4,6 +4,8 @@ A 7k/8k osu!mania to BMS file converter.
 
 Supports fully keysounded maps and bpm changes.
 
+[Original Repo](https://github.com/mashimycota/om2bms)
+
 ### Installation
 
 Written on Python 3.6+ and requires Pillow (for image resizing).

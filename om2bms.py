@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-hs', '--hitsound',
                         action='store_false',
-                        default=True,
+                        default=False,
                         help='Disables hitsounds.')
 
     parser.add_argument('-b', '--bg',
@@ -33,7 +33,7 @@ if __name__ == '__main__':
                         help="Adjusts music start time by [offset] ms.")
 
     parser.add_argument('-j', '--judge',
-                        default=3,
+                        default=2,
                         type=int,
                         help="Judge difficulty. Defaults to EASY. "
                         "(3: EASY), (2: NORMAL), (1: HARD), (0: VERY HARD)")
