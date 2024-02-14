@@ -15,6 +15,11 @@ if __name__ == "__main__":
         "hitsound": None, "bg": True, "offset": -235, "judge": 2
     }
 
+    if not os.path.isdir(curr_opts["in_file"]):
+        os.mkdir(curr_opts["in_file"])
+        print(f"The missing input directory \"{curr_opts['in_file']}\" has been created. You can put your .osz files in there to convert.")
+        input("Press ENTER to continue...")
+
 
     while not end:
         # ugly format that shows the value of every setting at the beginning of each loop
@@ -51,6 +56,7 @@ Background Image: {}\t\t Default Map Offset: {}ms\t\t Judgement: {}""".format(cu
         if curr_page == "main": # functionality for each option of main page
             if option == "1":
                 # input_dir_scan = list(os.scandir(curr_opts["in_file"]))
+                
                 for file in os.scandir(curr_opts["in_file"]): # we loop across the path of every .osz file and convert them
                     if file.is_file() and file.path.endswith(".osz"):
                         curr_opts["in_file"] = file.path
