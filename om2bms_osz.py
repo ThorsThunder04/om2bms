@@ -1,5 +1,6 @@
 import zipfile
 import os
+import json
 import shutil
 
 from argparse import ArgumentParser
@@ -10,37 +11,47 @@ from types import SimpleNamespace
 import om2bms.om_to_bms
 import multiprocessing
 
-def convert(in_file: str, set_default_out: str = None, hitsound: bool = None, bg: bool = True, foldername: str = None, offset: int = -235, judge: int = 2):
+def convert(in_file: str, set_default_out: str = None, hitsound: bool = None, bg: bool = True, video: bool = True, foldername: str = None, offset: int = -235, judge: int = 2):
 
     args = SimpleNamespace(**{ # Allows simpler use of the paramaters
-        "in_file": in_file, "set_default_out": set_default_out,
-        "hitsound": hitsound,"bg": bg,
-        "foldername": foldername, "offset": offset,
+        "in_file": in_file, 
+        "set_default_out": set_default_out,
+        "hitsound": hitsound,
+        "bg": bg,
+        "video": video,
+        "foldername": foldername,
+        "offset": offset,
         "judge": judge
     })
 
     cwd = os.getcwd()
 
-    cfg_file = os.path.join(cwd, 'default_outdir.ini')
+    cfg_file = os.path.join(cwd, 'settings.json')
     if not os.path.exists(cfg_file):
-        with open(cfg_file, "w") as file:
-            file.write("")
+        default_settings = {
+            "in_file": "input", 
+            "set_default_out": "output",
+            "hitsound": None, 
+            "bg": True, 
+            "video": True, 
+            "offset": -235, 
+            "judge": 2
+            }
+        json.dump({"custom":default_settings, "default": default_settings}, open(cfg_file, "w"))
+
+    # I know this whole if statement is weird, but I don't want to risk breaking anything any more
     if args.set_default_out is not None and args.set_default_out:
-        with open(cfg_file, 'w') as cfg_fp:
-            cfg_fp.write(args.set_default_out)
-            # print('Default output directory has been set to "%s"' % args.set_default_out)
-            cfg_fp.close()
+        # modifies output dir in json settings
+        settings_obj = json.load(open(cfg_file, "r"))
+        settings_obj["custom"]["set_default_out"] = args.set_default_out.strip()
+        json.dump(settings_obj, open(cfg_file, "w"))
+
         outdir = args.set_default_out.strip()
+    else:
+        outdir = json.load(open(cfg_file, "r"))["custom"]["set_default_out"]
 
     if args.in_file is None:
         exit(0)
-
-    if os.path.exists(cfg_file):
-        with open(cfg_file, "r") as cfg_fp:
-            outdir = cfg_fp.readline().strip()
-            cfg_fp.close()
-    else:
-        outdir = cwd
 
     if args.foldername is None:
         foldername = os.path.basename(args.in_file)[:-4]
@@ -126,6 +137,7 @@ def start_convertion(filedir_, output_file_dir_, file_, args, bg_list_, audio_li
         om2bms.om_to_bms.OsuManiaToBMSParser._convertion_options = {
             "HITSOUND": None if args.hitsound == False else args.hitsound,
             "BG": args.bg,
+            "VIDEO": args.video,
             "OFFSET": args.offset,
             "JUDGE": args.judge
         }
@@ -193,6 +205,11 @@ if __name__ == "__main__":
                         action='store_false',
                         default=True,
                         help='Disables background image conversion.')
+    
+    parser.add_argument("-v", "--video",
+                        action="store_false",
+                        default=True,
+                        help="Disables video conversion.")
 
     parser.add_argument('-f', '--foldername',
                         action='store',

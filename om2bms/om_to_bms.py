@@ -507,7 +507,7 @@ class OsuManiaToBMSParser:
         buffer.append("")
         if self.beatmap.audio_filename is not None: # is for preview audio
             buffer.append("#PREVIEW " + "preview_" + self.beatmap.audio_filename)
-        if self.beatmap.video_filename is not None: #TODO add to _conversion_options so that it isn't added by default => adding to cmd UI also
+        if self.beatmap.video_filename is not None and OsuManiaToBMSParser._convertion_options["VIDEO"]: #TODO add to _conversion_options so that it isn't added by default => adding to cmd UI also
             buffer.append("#VIDEOFILE " + self.beatmap.video_filename)
         if self.beatmap.stagebg is not None and OsuManiaToBMSParser._convertion_options["BG"]:
             buffer.append("#BMP01 " + self.beatmap.stagebg)

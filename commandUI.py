@@ -1,5 +1,6 @@
 import om2bms_osz
 import os
+import json
 
 
 if __name__ == "__main__":
@@ -9,11 +10,30 @@ if __name__ == "__main__":
     end = False
     curr_page = "main"
 
-    curr_opts = {
-        "in_file": "input", 
-        "set_default_out": open("./default_outdir.ini", "r").read().strip(),
-        "hitsound": None, "bg": True, "offset": -235, "judge": 2
-    }
+    # curr_opts = {
+    #     "in_file": "input", 
+    #     "set_default_out": open("./default_outdir.ini", "r").read().strip(),
+    #     "hitsound": None, 
+    #     "bg": True, 
+    #     "video": True, 
+    #     "offset": -235, 
+    #     "judge": 2
+    # }
+    if not os.path.exists("./settings.json"):
+        # incase someone for some reason deletes the settings file
+        default_settings = {
+            "in_file": "input", 
+            "set_default_out": "output",
+            "hitsound": None, 
+            "bg": True, 
+            "video": True, 
+            "offset": -235, 
+            "judge": 2
+            }
+        json.dump({"custom":default_settings, "default": default_settings}, open("./settings.json", "w"))
+
+    curr_opts = json.load(open("./settings.json", "r"))["custom"]
+    
 
     if not os.path.isdir(curr_opts["in_file"]):
         os.mkdir(curr_opts["in_file"])
@@ -22,10 +42,16 @@ if __name__ == "__main__":
 
 
     while not end:
+        # updates options with whatever changes were made in previous iteration
+        settings_file = json.load(open("./settings.json", "r"))
+        settings_file["custom"] = curr_opts
+        json.dump(settings_file, open("./settings.json", "w"))  
+
         # ugly format that shows the value of every setting at the beginning of each loop
         main_page_options = """Input Folder: {}\t\t Output Folder: {}\t\t\t Use Hitsounds: {}
-Background Image: {}\t\t Default Map Offset: {}ms\t\t Judgement: {}""".format(curr_opts["in_file"], curr_opts["set_default_out"], "False" if curr_opts["hitsound"] is None else curr_opts["hitsound"],
-                                                                                curr_opts["bg"], curr_opts["offset"], curr_opts["judge"])
+Background Image: {}\t\t Default Map Offset: {}ms\t\t Judgement: {}
+Background Video: {}""".format(curr_opts["in_file"], curr_opts["set_default_out"], "False" if curr_opts["hitsound"] is None else curr_opts["hitsound"],
+                                                                                curr_opts["bg"], curr_opts["offset"], curr_opts["judge"], curr_opts["video"])
 
 
         clear()
@@ -44,6 +70,8 @@ Background Image: {}\t\t Default Map Offset: {}ms\t\t Judgement: {}""".format(cu
             print("(1) Change Input Folder \t\t (2) Change Output Folder")
             print("(3) Toggle hitsounds \t\t\t (4) Toggle Convert Background Image")
             print("(5) Change Offset\t\t\t (6) Change Map Judgement")
+            print("(7) Toggle Convert Background Video")
+            print("\n(RESET): Reset these settings back to the system defaults")
             print("\n(0) Back to main page")
             
 
@@ -106,6 +134,13 @@ Background Image: {}\t\t Default Map Offset: {}ms\t\t Judgement: {}""".format(cu
                     curr_opts["judge"] = int(new_judgement) 
                 else:
                     input("ERROR: Judgement number must be a positive whole number!")
+            elif option == "7":
+                curr_opts["video"] = not curr_opts["video"]
+            elif option == "reset":
+                settings_file = json.load(open("./settings.json", "r"))
+                curr_opts = settings_file["default"]
+                # will update the "settings.json" on next iteration of the while loop
+                
             elif option == "0":
                 curr_page = "main"
             else:
