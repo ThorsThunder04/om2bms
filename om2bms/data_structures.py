@@ -10,6 +10,8 @@ class OsuMania:
         # general
         self.audio_filename = None
         self.audio_lead_in = None
+        self.video_filename = None
+        self.video_start_time = None
         self.special_style = None  # o!m scrollkey y/n
         self.sample_set = None
         # metadata

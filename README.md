@@ -69,8 +69,9 @@ python om2bms_osu.py -h
 
 - [ ] Slider Velocity
 - [ ] Difficulty calculation when converting 
-- [ ] Background Videos
-- [ ] Support other keycounds then just 7k and 8k
+- [x] *Background Videos* **(Needs to find fix for offset)**
+- [ ] Persistent settings file for UI
+- [ ] Support other keycounts then just 7k and 8k
 - [ ] Improved background image resize/processing when converting
 - [x] Adapt to be used without command line, aka a general run function for the arguments (necessary for GUI and improving command line UI)
 - [ ] Make GUI

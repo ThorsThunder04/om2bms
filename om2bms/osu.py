@@ -192,12 +192,13 @@ class OsuBeatmapReader:
                     new_sample.time = time
                     beatmap.sample_objects.append(new_sample)
 
-            # elif line_separated[0] == "Video":
-            #     if len(line_separated) != 3:
-            #         OsuParseException("Events Error: Invalid Syntax")
-            #         pass
-            #     event["Time"] = int(line_separated[1])
-            #     event["FilePath"] = line_separated[2][1:-1]
+            elif line_separated[0] == "Video":
+                if len(line_separated) != 3:
+                    OsuParseException("Events Error: Invalid Syntax")
+                else:
+                    beatmap.video_start_time = int(line_separated[1])
+                    beatmap.video_filename = line_separated[2].strip("\n").strip("\r")[1:-1]
+
             elif len(line_separated) <= 5 and line_separated[0] == "0":
                 temp = line_separated[2]
                 temp = temp.replace('"', '').strip()
