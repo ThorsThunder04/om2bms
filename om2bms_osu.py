@@ -44,6 +44,7 @@ if __name__ == '__main__':
 
     om2bms.om_to_bms.OsuManiaToBMSParser._convertion_options = {
         "HITSOUND": args.hitsound,
+        "VIDEO": False,
         "BG": args.bg,
         "OFFSET": args.offset,
         "JUDGE": args.judge
