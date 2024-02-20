@@ -8,7 +8,7 @@ Supports fully keysounded maps and bpm changes.
 
 **If you come across any Errors, please report them in the issues!**
 
-### Installation
+## Installation
 
 Written on Python 3.6+.
 You can download the required libraries by running:
@@ -27,7 +27,7 @@ python om2bms_osz.py -sdo [OUTPUT DIRECTORY]
 
 or go to `default_outdir.ini` and paste the path to a subdirectory in a BMS songfolder directory.
 
-### Running
+## Running
 Run
 
 ```
@@ -65,19 +65,19 @@ python om2bms_osu.py -h
 
 
 
-### To-do List
+## To-do List
 
 - [ ] Slider Velocity
 - [ ] Difficulty calculation when converting 
 - [x] *Background Videos* **(Needs to find fix for offset)**
-- [ ] Persistent settings file for UI
+- [x] Persistent settings file for UI
 - [ ] Support other keycounts then just 7k and 8k
 - [ ] Improved background image resize/processing when converting
 - [x] Adapt to be used without command line, aka a general run function for the arguments (necessary for GUI and improving command line UI)
 - [ ] Make GUI
 - [ ] Drag-and-drop for GUI
 
-### Notes
+## Notes
 
 - Tested with LR2
 - Does not currently support SV changes
