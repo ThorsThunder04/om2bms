@@ -74,11 +74,31 @@ class OsuBeatmapReader:
             else:
                 raise OsuParseException("HitObject Error: type " + hit_object_type + " not found in " + line)
 
+            #! This is where the column conversion will be done for lower key counts. 
+            # column index = floor(x*y/512) = floor(x/512/y)
+            # x = index * 512/y
+            lt7keys = {
+                6: {0:1, 1:2, 2:3, #  + - +
+                    3:5, 4:6, 5:7},# + + + +
+
+                5: {0:2, 1:3, 2:4, #  + + +
+                    3:5, 4:6},     # - + + -
+
+                4: {0:1, 1:3, #  - - -
+                    2:5, 3:7},# + + + +
+
+                3: {0:2, 1:4, 2:6}, # + + + (just the top row)
+                2: {0:1, 2:7}, # the two extremity buttons on bottom row
+            }
             if beatmap.key_count == 7:
                 hit_object.mania_column = (int(line_separated[0]) // (512 // beatmap.key_count)) + 1 \
                     if line_separated[0] != "0" else 0
-            elif beatmap.key_count == 8:
+            elif beatmap.key_count in range(2, 9):
                 hit_object.mania_column = (int(line_separated[0]) // (512 // beatmap.key_count))
+                if beatmap.key_count != 8:
+                    # uses dictionary to redefine which column it's in depending on keycount
+                    hit_object.mania_column = lt7keys[beatmap.key_count][hit_object.mania_column] 
+
             hit_object.hit_sound = int(line_separated[4])
             hit_object.time = int(line_separated[2])
 
@@ -213,10 +233,10 @@ class OsuBeatmapReader:
             line_property = get_line_property(line)
             if line_property[0] == "CircleSize":
                 keycount = int(line_property[1])
-                if keycount == 7 or keycount == 8:
+                if keycount in range(2,9):
                     beatmap.key_count = keycount
                 else:
-                    raise OsuParseException("Only 7k/8k files are supported!")
+                    raise OsuParseException("Only 2k-8k files are supported!")
             elif line_property[0] == "HPDrainRate":
                 pass
             elif line_property[0] == "OverallDifficulty":

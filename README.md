@@ -2,7 +2,7 @@
 
 [Original Repo](https://github.com/mashimycota/om2bms)
 
-Program that converts osu!mania maps to BMS maps. (**currently only supports 7k and 8k**)
+Program that converts osu!mania maps to BMS maps. (**currently only supports 2k to 8k**)
 
 Supports fully keysounded maps and bpm changes.
 
@@ -34,7 +34,7 @@ Run
 python om2bms_osz.py -i sample_osz_file.osz
 ```
 
-to convert all 7k/8k files in `sample_osz_file.osz` and output them to `[OUTPUT DIRECTORY]/sample_osz_file`
+to convert all 2k-8k files in `sample_osz_file.osz` and output them to `[OUTPUT DIRECTORY]/sample_osz_file`
 
 To convert individual .osu files run
 
@@ -71,7 +71,7 @@ python om2bms_osu.py -h
 - [ ] Difficulty calculation when converting 
 - [x] *Background Videos* **(Needs to find fix for offset)**
 - [x] Persistent settings file for UI
-- [ ] Support other keycounts then just 7k and 8k
+- [x] Support other keycounts then just 7k and 8k **(Supports 2k - 8k)**
 - [ ] Improved background image resize/processing when converting
 - [x] Adapt to be used without command line, aka a general run function for the arguments (necessary for GUI and improving command line UI)
 - [ ] Make GUI
