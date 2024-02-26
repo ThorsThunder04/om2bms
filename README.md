@@ -63,7 +63,28 @@ python om2bms_osz.py -h
 python om2bms_osu.py -h
 ```
 
+## Key Mapping
+(note: I will make images for this section in the future | will also make the layouts customizable)
 
+
+Lets define the columns like this = `|1|2|3|4|5|6|7|8|`.
+
+If a column is used for the key count in question, it will have it's corresponding number inside it.
+
+### 2k
+`|1| | | |5| | | |` (so 1k + scratch with controller)
+
+### 3k
+`| | | |4|5|6| | |`
+
+### 4k
+`| | |3|4| |6|7| |`
+
+### 5k
+`| |2|3|4|5|6| | |`
+
+### 6k
+`|1|2|3|4|5|6| | |` (so 5k + scratch if controller)
 
 ## To-do List
 

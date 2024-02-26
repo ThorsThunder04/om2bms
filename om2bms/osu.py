@@ -78,17 +78,17 @@ class OsuBeatmapReader:
             # column index = floor(x*y/512) = floor(x/512/y)
             # x = index * 512/y
             lt7keys = {
-                6: {0:1, 1:2, 2:3, #  + - +
-                    3:5, 4:6, 5:7},# + + + +
+                6: {0:0, 1:1, 2:2, 
+                    3:3, 4:4, 5:5},
 
-                5: {0:2, 1:3, 2:4, #  + + +
-                    3:5, 4:6},     # - + + -
+                5: {0:1, 1:2, 2:3,
+                    3:4, 4:5},
 
-                4: {0:1, 1:3, #  - - -
-                    2:5, 3:7},# + + + +
+                4: {0:2, 1:3, 
+                    2:5, 3:6},
 
-                3: {0:2, 1:4, 2:6}, # + + + (just the top row)
-                2: {0:1, 2:7}, # the two extremity buttons on bottom row
+                3: {0:3, 1:4, 2:5},
+                2: {0:0, 2:4},
             }
             if beatmap.key_count == 7:
                 hit_object.mania_column = (int(line_separated[0]) // (512 // beatmap.key_count)) + 1 \
