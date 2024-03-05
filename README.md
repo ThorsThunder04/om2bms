@@ -97,6 +97,7 @@ If a column is used for the key count in question, it will have it's correspondi
 - [x] Adapt to be used without command line, aka a general run function for the arguments (necessary for GUI and improving command line UI)
 - [ ] Make GUI
 - [ ] Drag-and-drop for GUI
+- [ ] Change output file format from `.bms` to `.bmson` (will allow easier feature implementation). Not to be done for a while. Will require big rewrite.
 
 ## Notes
 
