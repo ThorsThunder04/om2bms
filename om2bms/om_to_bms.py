@@ -495,7 +495,11 @@ class OsuManiaToBMSParser:
         buffer.append("#PLAYER 1")
         buffer.append("#GENRE " + self.beatmap.creator)
         buffer.append("#TITLE " + self.beatmap.title_unicode)
-        buffer.append("#SUBTITLE " + self.beatmap.version)
+        if str(self.beatmap.key_count) + "k" not in self.beatmap.version.lower(): # addes [nk] prefix to the diff name
+            diff_key_count = "[" + str(self.beatmap.key_count) + "K] "
+            buffer.append("#SUBTITLE " + diff_key_count + self.beatmap.version)
+        else:
+            buffer.append("#SUBTITLE " + self.beatmap.version)
         buffer.append("#ARTIST " + self.beatmap.artist_unicode)
         # buffer.append("#SUBARTIST " + beatmap.artist)
         buffer.append("#BPM " + str(int(calculate_bpm(self.beatmap.timing_points[0]))))
