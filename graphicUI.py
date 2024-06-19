@@ -114,7 +114,7 @@ def applyConfig():
     settings["custom"] = {
         "in_file":in_file.get(),
         "set_default_out":set_default_out.get(),
-        "hitsound":hitsound.get(),
+        "hitsound":True if hitsound.get() else None,
         "bg":bg.get(),
         "video":video.get(),
         "offset":offset.get(),
