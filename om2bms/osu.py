@@ -75,6 +75,8 @@ class OsuBeatmapReader:
                 raise OsuParseException("HitObject Error: type " + hit_object_type + " not found in " + line)
 
             #! This is where the column conversion will be done for lower key counts. 
+            #! To get this to be externally configurable, we will need a separate file (or a new key in the settings.json)
+            #! In the GUI, we will set a new tab for when we are changing this config. Since they will only be accessible by file.
             # column index = floor(x*y/512) = floor(x/512/y)
             # x = index * 512/y
             lt7keys = {
